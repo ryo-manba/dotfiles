@@ -93,7 +93,7 @@ ulimit -c 0
 # %*    時間(hh:flag_mm:ss)
 # %T    時間(hh:mm)
 # %t    時間(hh:mm(am/pm))
-PROMPT='%F{cyan}%n@%m%f:%~#
+PROMPT='%F{cyan}%~#
 > '
 
 # -----------------------------
@@ -209,6 +209,7 @@ alias tml='tmux list-window'
 alias dki="docker run -i -t -P"
 alias dex="docker exec -i -t"
 alias drmf='docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)'
+alias dcp='docker compose'
 
 # -----------------------------
 # Plugin
@@ -277,6 +278,10 @@ case "${OSTYPE}" in
   ;;
 esac
 
+# Setting PATH for Python 3.8
+# The original version is saved in .zprofile.pysave
+PATH="/Library/Frameworks/Python.framework/Versions/3.8/bin:${PATH}"
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -303,11 +308,11 @@ source $HOME/dotfiles/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 alias g='clang++ -std=c++17'
 alias a='./a.out'
 
-# # docker-compose
-# alias up='docker-compose up'
-# alias down='docker-compose down'
-# alias e='docker-compose exec'
-# alias ee='docker-compose exec nginx bash'
+# docker-compose
+alias up='docker-compose up'
+alias down='docker-compose down'
+alias e='docker-compose exec'
+alias ee='docker-compose exec nginx bash'
 
 func show() {
   git diff --name-only `git branch | awk 'NR==2 {print $2}'` | sort
@@ -316,3 +321,4 @@ func show() {
 func restart() {
   docker-compose down && docker-compose up
 }
+eval "$(anyenv init -)"
