@@ -211,6 +211,11 @@ alias dex="docker exec -i -t"
 alias drmf='docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)'
 alias dcp='docker compose'
 
+# git
+alias gp='git push origin head'
+alias gpl='git pull origin head'
+alias gsw='git switch'
+
 # -----------------------------
 # Plugin
 # -----------------------------
@@ -321,4 +326,21 @@ func show() {
 func restart() {
   docker-compose down && docker-compose up
 }
-eval "$(anyenv init -)"
+
+alias pn="pnpm"
+
+# screen recording to gif
+# togif YOUR_VIDEO.mov
+togif ()
+{
+  ffmpeg -i $1 -r 24 $1.gif
+}
+
+togif-high-quority ()
+{
+  local input_file="$1"
+  local base_name=$(basename "$input_file" | rev | cut -d. -f2- | rev)
+  local output_file="${base_name}.gif"
+
+  ffmpeg -i "$input_file" -filter_complex "[0:v] split [a][b];[a] palettegen=stats_mode=diff:reserve_transparent=0 [p];[b][p] paletteuse=dither=none:diff_mode=rectangle" "$output_file"
+}
