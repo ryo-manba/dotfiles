@@ -75,26 +75,6 @@ export RSYNC_RSH=ssh
 umask 022
 ulimit -c 0
 
-# -----------------------------
-# Prompt
-# -----------------------------
-# %M    ホスト名
-# %m    ホスト名
-# %d    カレントディレクトリ(フルパス)
-# %~    カレントディレクトリ(フルパス2)
-# %C    カレントディレクトリ(相対パス)
-# %c    カレントディレクトリ(相対パス)
-# %n    ユーザ名
-# %#    ユーザ種別
-# %?    直前のコマンドの戻り値
-# %D    日付(yy-mm-dd)
-# %W    日付(yy/mm/dd)
-# %w    日付(day dd)
-# %*    時間(hh:flag_mm:ss)
-# %T    時間(hh:mm)
-# %t    時間(hh:mm(am/pm))
-PROMPT='%F{cyan}%~#
-> '
 
 # -----------------------------
 # Completion
@@ -216,34 +196,15 @@ alias gp='git push origin head'
 alias gpl='git pull origin head'
 alias gsw='git switch'
 
-# -----------------------------
-# Plugin
-# -----------------------------
-# root のコマンドはヒストリに追加しない
-#if [ $UID = 0 ]; then
-#  unset HISTFILE
-#  SAVEHIST=0
-#fi
+alias g='clang++ -std=c++17'
+alias a='./a.out'
 
-function t()
-{
-  tmux new-session -s $(pwd |sed -E 's!^.+/([^/]+/[^/]+)$!\1!g' | sed -e 's/\./-/g')
-}
-
-function psgrep() {
-  ps aux | grep -v grep | grep "USER.*COMMAND"
-  ps aux | grep -v grep | grep $1
-}
-
-function dstop()
-{
-  docker stop $(docker ps -a -q);
-}
-
-function drm()
-{
-  docker rm $(docker ps -a -q);
-}
+# docker-compose
+alias up='docker-compose up'
+alias down='docker-compose down'
+alias e='docker-compose exec'
+alias ee='docker-compose exec nginx bash'
+alias pn="pnpm"
 
 # -----------------------------
 # Plugin
@@ -263,12 +224,12 @@ zplug "zsh-users/zsh-autosuggestions"
 zplug "zsh-users/zsh-syntax-highlighting", defer:2
 
 # インストールしていないプラグインをインストール
-if ! zplug check --verbose; then
-  printf "Install? [y/N]: "
-  if read -q; then
-      echo; zplug install
-  fi
-fi
+# if ! zplug check --verbose; then
+#   printf "Install? [y/N]: "
+#   if read -q; then
+#       echo; zplug install
+#   fi
+# fi
 
 # コマンドをリンクして、PATH に追加し、プラグインは読み込む
 zplug load --verbose
@@ -294,40 +255,41 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+
+
+# NOTE: run only first time
+# brew install zsh-syntax-highlighting
+# POWERLEVEL10K_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+# git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "$POWERLEVEL10K_DIR"
+# sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 #ZSH_THEME="robbyrussell"
 ZSH_THEME="powerlevel10k/powerlevel10k"
+source $ZSH/oh-my-zsh.sh
 
 plugins=(git)
 
-source $ZSH/oh-my-zsh.sh
-source $HOME/dotfiles/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# source $HOME/dotfiles/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-alias g='clang++ -std=c++17'
-alias a='./a.out'
-
-# docker-compose
-alias up='docker-compose up'
-alias down='docker-compose down'
-alias e='docker-compose exec'
-alias ee='docker-compose exec nginx bash'
-
-func show() {
+func show()
+{
   git diff --name-only `git branch | awk 'NR==2 {print $2}'` | sort
 }
 
-func restart() {
+func restart()
+{
   docker-compose down && docker-compose up
 }
-
-alias pn="pnpm"
 
 # screen recording to gif
 # togif YOUR_VIDEO.mov
@@ -344,3 +306,24 @@ togif-high-quority ()
 
   ffmpeg -i "$input_file" -filter_complex "[0:v] split [a][b];[a] palettegen=stats_mode=diff:reserve_transparent=0 [p];[b][p] paletteuse=dither=none:diff_mode=rectangle" "$output_file"
 }
+
+function t()
+{
+  tmux new-session -s $(pwd |sed -E 's!^.+/([^/]+/[^/]+)$!\1!g' | sed -e 's/\./-/g')
+}
+
+function psgrep() {
+  ps aux | grep -v grep | grep "USER.*COMMAND"
+  ps aux | grep -v grep | grep $1
+}
+
+function dstop()
+{
+  docker stop $(docker ps -a -q);
+}
+
+function drm()
+{
+  docker rm $(docker ps -a -q);
+}
+
