@@ -10,6 +10,9 @@ export EDITOR=vim
 # パスを追加したい場合
 export PATH="$HOME/bin:$PATH"
 
+# Volta - prioritize over other node installations
+export PATH="$HOME/.volta/bin:$PATH"
+
 # cdした際のディレクトリをディレクトリスタックへ自動追加
 # setopt auto_pushd
 
@@ -206,6 +209,9 @@ alias e='docker-compose exec'
 alias ee='docker-compose exec nginx bash'
 alias pn="pnpm"
 
+# Cursor
+alias code='cursor'
+
 # -----------------------------
 # Plugin
 # -----------------------------
@@ -327,3 +333,52 @@ function drm()
   docker rm $(docker ps -a -q);
 }
 
+
+### Added by Zinit's installer
+if [[ ! -f $HOME/.local/share/zinit/zinit.git/zinit.zsh ]]; then
+    print -P "%F{33} %F{220}Installing %F{33}ZDHARMA-CONTINUUM%F{220} Initiative Plugin Manager (%F{33}zdharma-continuum/zinit%F{220})…%f"
+    command mkdir -p "$HOME/.local/share/zinit" && command chmod g-rwX "$HOME/.local/share/zinit"
+    command git clone https://github.com/zdharma-continuum/zinit "$HOME/.local/share/zinit/zinit.git" && \
+        print -P "%F{33} %F{34}Installation successful.%f%b" || \
+        print -P "%F{160} The clone has failed.%f%b"
+fi
+
+source "$HOME/.local/share/zinit/zinit.git/zinit.zsh"
+autoload -Uz _zinit
+(( ${+_comps} )) && _comps[zinit]=_zinit
+
+### End of Zinit's installer chunk
+source ~/powerlevel10k/powerlevel10k.zsh-theme
+
+
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+
+eval "$(direnv hook bash)"
+
+
+# peco
+alias xpeco='peco | xargs'
+
+# peco and ghq
+# alias g='cd $(ghq root)/$(ghq list | peco)'
+
+# zsh-history-search-with-peco.zsh
+# https://gist.github.com/jimeh/7d94f1000cfc9cba2893
+if which peco &> /dev/null; then
+  function peco_select_history() {
+    local tac
+    (which gtac &> /dev/null && tac="gtac") || \
+      (which tac &> /dev/null && tac="tac") || \
+      tac="tail -r"
+    BUFFER=$(fc -l -n 1 | eval $tac | \
+                peco --layout=bottom-up --query "$LBUFFER")
+    CURSOR=$#BUFFER # move cursor
+    zle -R -c       # refresh
+  }
+
+  zle -N peco_select_history
+  bindkey '^R' peco_select_history
+fi
+
+# https://spiess.dev/blog/how-i-use-claude-code
+alias yolo="claude --dangerously-skip-permissions"
